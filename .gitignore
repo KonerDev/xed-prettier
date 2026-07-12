@@ -1,5 +1,6 @@
 **/build/**
 output/**
+bin/**
 app/libs/sdk.jar
 *.iml
 .gradle

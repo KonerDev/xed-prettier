@@ -1,6 +1,6 @@
 import com.google.gson.Gson
-import java.net.URL
 import com.google.gson.JsonObject
+import java.net.URL
 
 plugins {
     alias(libs.plugins.android.application)
@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.rk.demo"
+    namespace = "com.koner.prettier"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.rk.demo"
+        applicationId = "com.koner.prettier"
         minSdk = 26
         targetSdk = 37
         versionCode = 1
@@ -22,11 +22,12 @@ android {
 
     buildTypes {
         release {
-            // If you plan to enable ProGuard, then make sure to add @Keep on the main class. Otherwise, Xed-Editor won't be able to find it.
+            // If you plan to enable ProGuard, then make sure to add @Keep on the main class. Otherwise, Xed-Editor
+            // won't be able to find it.
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -41,13 +42,13 @@ android {
     }
 }
 
-
 // Always try to match the versions of library to the versions used in Xed-Editor
 dependencies {
     // Xed-Editor extension SDK, required to interact with the application, do NOT remove
     compileOnly(files("libs/sdk.jar"))
 
-    // If a library is used in Xed-Editor and your extension is common, then you should use compileOnly. Otherwise, it slows down the app.
+    // If a library is used in Xed-Editor and your extension is common, then you should use compileOnly. Otherwise, it
+    // slows down the app.
     compileOnly(libs.androidx.appcompat)
     compileOnly(libs.material)
     compileOnly(libs.androidx.constraintlayout)
@@ -94,8 +95,7 @@ val TAG_NAME = "sdk-latest"
 val ASSET_NAME = "sdk.jar"
 
 val API_URL = "https://api.github.com/repos/$GITHUB_OWNER/$GITHUB_REPO/releases/tags/$TAG_NAME"
-val DOWNLOAD_URL =
-    "https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$TAG_NAME/$ASSET_NAME"
+val DOWNLOAD_URL = "https://github.com/$GITHUB_OWNER/$GITHUB_REPO/releases/download/$TAG_NAME/$ASSET_NAME"
 
 val timestampFile = project.layout.buildDirectory.file("sdk_updated_at.txt")
 val outputFile = project.layout.projectDirectory.file("libs/$ASSET_NAME")
@@ -122,11 +122,12 @@ tasks.register<DefaultTask>("downloadLatestJar") {
             throw GradleException("Could not check latest release timestamp.", e)
         }
 
-        val storedUpdatedAt = if (timestampFile.get().asFile.exists()) {
-            timestampFile.get().asFile.readText().trim()
-        } else {
-            null
-        }
+        val storedUpdatedAt =
+            if (timestampFile.get().asFile.exists()) {
+                timestampFile.get().asFile.readText().trim()
+            } else {
+                null
+            }
 
         if (remoteUpdatedAt == storedUpdatedAt) {
             println("✅ $ASSET_NAME is up to date (Timestamp: $remoteUpdatedAt). Skipping download.")
@@ -168,13 +169,8 @@ tasks.register<Zip>("createFinalZip") {
     description = "Archives the generated APK files into a single ZIP file."
     group = "build"
 
-    val apkFiles = layout.buildDirectory
-        .dir("outputs/apk")
-        .get()
-        .asFile
-        .walk()
-        .filter { it.extension == "apk" }
-        .toList()
+    val apkFiles =
+        layout.buildDirectory.dir("outputs/apk").get().asFile.walk().filter { it.extension == "apk" }.toList()
 
     if (apkFiles.size > 1) {
         throw GradleException("multiple apk files detected, this build system canot handle multiple apk files")
@@ -199,6 +195,7 @@ tasks.register<Zip>("createFinalZip") {
     val iconFile = File(rootDir, "icon.png")
     val readmeFile = File(rootDir, "README.md")
     val changelogFile = File(rootDir, "CHANGELOG.md")
+    val binDir = File(rootDir, "bin")
 
     archiveFileName.set("$extensionName.zip")
 
@@ -207,7 +204,7 @@ tasks.register<Zip>("createFinalZip") {
     from(iconFile) { into("") }
     from(readmeFile) { into("") }
     from(changelogFile) { into("") }
+    from(binDir) { into("bin") }
 
     destinationDirectory.set(File(rootDir, "output"))
 }
-

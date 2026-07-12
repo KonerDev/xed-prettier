@@ -1,14 +1,22 @@
 {
   "$schema": "schema/schema.json",
-  "id": "com.rk.demo",
-  "name": "Extension template",
-  "mainClass": "com.rk.demo.Main",
+  "id": "com.koner.prettier",
+  "name": "Prettier",
+  "mainClass": "com.koner.prettier.Main",
   "version": "1.0.0",
-  "description": "A demo extension template project",
+  "description": "Xed-Editor extension adding automatic code formatting with Prettier.",
+  "license": "MIT",
+  "tags": [
+    "prettier",
+    "formatting",
+    "formatter"
+  ],
   "author": {
-    "displayName": "Unknown"
+    "displayName": "KonerDev",
+    "github": "KonerDev"
   },
-  "minAppVersion": 95,
-  "maxAppVersion": 95,
-  "repository": "https://github.com/Xed-Editor/Extension-Template"
+  "minAppVersion": 101,
+  "maxAppVersion": null,
+  "repository": "https://github.com/KonerDev/xed-prettier",
+  "hasSettings": true
 }

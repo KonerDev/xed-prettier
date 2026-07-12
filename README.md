@@ -1,58 +1,46 @@
-# Xed-Editor Extension Template
+<img src="./icon.png" alt="Prettier Logo" width="128" height="128" /><br>
 
-This repository is a starting point for building extensions for **Xed-Editor (Karbon)**.
-It includes a ready-to-use template, build scripts, and a simple folder structure so you can focus on writing your extension instead of setting up the environment.
+# Xed-Editor Prettier Extension
 
-> [!TIP]
-> See the [documentation](https://xed-editor.github.io/Xed-Docs/docs/extensions) page for more details about creating and managing extensions for Xed-Editor.
+This extension adds automatic code formatting powered
+by [Prettier](https://github.com/prettier/prettier).
 
----
+## Features
 
-## Getting Started
+- Format code with Prettier through commands or automatically on save
+- Format whole file or selected region
+- Customize code style and formatting options through settings
 
-### 1. Clone the Template
+## Build instructions
 
-```bash
-git clone https://github.com/Xed-Editor/Extension-Template
-cd Extension-Template
-```
+### Prerequisites
 
----
+- [Bun 1.x](https://bun.com/docs/installation) (install e.g. via `npm install -g bun`)
 
-### 2. Configure Your Extension
+### Build binaries
 
-Before building, update the following in `manifest.json`:
-
-* `name` – your extension's name
-* `id` – unique identifier of your extension
-* `version` – version of your extension
-* `author` – Developer of the extension
-
->[!WARNING]
-If you rename the main class or move it to another package/folder, **you must update the `mainClass` field in `manifest.json`**, or the extension will not load.
-
----
-
-### 3. Build the Extension
-
-To build the extension in **debug mode**, run:
+First setup `prettier-standalone` by installing dependencies:
 
 ```bash
-./compileDebug
+cd prettier-standalone && bun install
 ```
 
-(You can create your own release script later if needed.)
+To build the standalone Prettier binaries, execute:
 
----
-
-### 4. Find the Output
-
-After a successful build, your extension package will be created here:
-
-```
-output/YourExtensionName.zip
+```bash
+bun run build
 ```
 
-This ZIP file is what you load into **Xed-Editor** as a extension.
+### Build extension
 
-This includes guides, API references, examples, and best practices for developing your extensions.
+Now you can build the extension by executing:
+
+```bash
+cd .. && ./compileDebug
+```
+
+## Installation
+
+Install the extension through the Xed-Editor's extension marketplace, and you're ready to go!
+Alternatively, you can download the latest release ZIP file and install it via *
+*`Settings > Extensions > Install from storage`**.
