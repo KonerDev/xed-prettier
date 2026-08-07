@@ -19,22 +19,16 @@ import com.rk.components.SteppedValueSlider
 import com.rk.components.compose.preferences.base.PreferenceGroup
 import com.rk.editor.Editor
 import com.rk.editor.Formatters
-import com.rk.events.EditorTabEvent
-import com.rk.events.EventSubscription
-import com.rk.events.Events
 import com.rk.exec.ShellUtils
 import com.rk.extension.ActivityProvider
 import com.rk.extension.ExtensionAPI
 import com.rk.extension.ExtensionContext
 import com.rk.file.child
-import com.rk.settings.Settings
 import com.rk.tabs.editor.EditorTab
 import com.rk.utils.dialog
 import io.github.rosemoe.sora.event.EditorFormatEvent
-import io.github.rosemoe.sora.lsp.editor.LspLanguage
 import io.github.rosemoe.sora.text.TextRange
 import io.github.rosemoe.sora.widget.subscribeEvent
-import kotlinx.coroutines.launch
 import java.io.File
 
 @Keep
@@ -45,7 +39,6 @@ class Main(context: ExtensionContext) : ExtensionAPI(context) {
 
     private var provider: PrettierProvider? = null
     private var command: PrettierCommand? = null
-    private var subscription: EventSubscription? = null
 
     private val armBinary = File(context.extension.installPath).child("bin/prettier-linux-arm64")
     private val x64Binary = File(context.extension.installPath).child("bin/prettier-linux-x64")
@@ -59,29 +52,11 @@ class Main(context: ExtensionContext) : ExtensionAPI(context) {
             }
         Formatters.registerFormatter(provider)
 
-        subscription =
-            Events.subscribe<EditorTabEvent.Saved> { event ->
-                if (Settings.format_on_save && !event.quickSave) {
-                    format(event.tab, provider, shouldSave = true)
-                }
-            }
-
         command =
             PrettierCommand(context) { editorTab, editor, textRange ->
-                    format(editorTab, editor, provider, textRange, ignoreLsp = true)
+                    format(editorTab, editor, provider, textRange)
                 }
                 .also { CommandProvider.registerCommand(it) }
-    }
-
-    private fun format(
-        editorTab: EditorTab,
-        provider: PrettierProvider,
-        range: TextRange? = null,
-        ignoreLsp: Boolean = false,
-        shouldSave: Boolean = false,
-    ) {
-        val editor = editorTab.editorState.editor.get() ?: return
-        format(editorTab, editor, provider, range, ignoreLsp, shouldSave)
     }
 
     private fun format(
@@ -89,38 +64,23 @@ class Main(context: ExtensionContext) : ExtensionAPI(context) {
         editor: Editor,
         provider: PrettierProvider,
         range: TextRange? = null,
-        ignoreLsp: Boolean = false,
-        shouldSave: Boolean = false,
     ) {
-        if (!Formatters.isProviderEnabled(provider)) {
-            return
-        }
-        if (editorTab.file.getExtension() !in provider.supportedExtensions) {
-            return
-        }
-
-        // Do not format file when LSP is connected (might have its own formatter)
-        if (!ignoreLsp && editor.editorLanguage is LspLanguage) {
+        val file = editorTab.file ?: return
+        if (file.getExtension() !in provider.supportedExtensions) {
             return
         }
 
-        editorTab.editorState.isWrapping = true // TODO: Better API
+        editorTab.registerTask("${context.extension.id}.formatting")
         editor.subscribeEvent<EditorFormatEvent> { event, subscription ->
             subscription.unsubscribe()
-
-            editorTab.editorState.isWrapping = false
-            if (shouldSave) {
-                context.scope.launch {
-                    editorTab.quickSave()
-                }
-            }
+            editorTab.unregisterTask("${context.extension.id}.formatting")
         }
 
         val formatContent =
             editor.text.copyText(false).apply {
                 isUndoEnabled = false
             }
-        provider.getFormatter(editorTab.file).apply {
+        provider.getFormatter(file)?.apply {
             setReceiver(editor)
             if (range != null) {
                 formatRegion(formatContent, range, editor.cursorRange)
@@ -135,14 +95,9 @@ class Main(context: ExtensionContext) : ExtensionAPI(context) {
         provider?.let {
             Formatters.unregisterFormatter(it)
         }
-
-        subscription?.unsubscribe()
-        subscription = null
-
         command?.let {
             CommandProvider.unregisterCommand(it)
         }
-        command = null
     }
 
     override fun afterUpdate() {

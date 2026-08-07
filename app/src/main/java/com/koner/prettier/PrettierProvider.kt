@@ -20,11 +20,8 @@ class PrettierProvider(
     override val icon
         get() = getPrettierIcon(context)
 
-    override fun getFormatter(): Formatter {
-        throw NotImplementedError(
-            "PrettierProvider.getFormatter() should not be called. Use PrettierFormatter.getFormatter(FileObject) instead."
-        )
+    override fun getFormatter(targetFile: FileObject): Formatter? {
+        if (targetFile == null) return null
+        return PrettierFormatter(context, settings, binary, targetFile)
     }
-
-    fun getFormatter(targetFile: FileObject) = PrettierFormatter(context, settings, binary, targetFile)
 }
