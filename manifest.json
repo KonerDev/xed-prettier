@@ -16,7 +16,6 @@
     "github": "KonerDev"
   },
   "minAppVersion": 106,
-  "maxAppVersion": null,
   "repository": "https://github.com/KonerDev/xed-prettier",
   "hasSettings": true
 }
