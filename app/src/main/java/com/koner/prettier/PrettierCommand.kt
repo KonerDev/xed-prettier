@@ -9,20 +9,20 @@ import com.rk.tabs.editor.EditorTab
 import io.github.rosemoe.sora.text.TextRange
 
 class PrettierCommand(
-    private val context: ExtensionContext,
+    private val extensionContext: ExtensionContext,
     private val onFormat: (EditorTab, Editor, TextRange?) -> Unit,
 ) : EditorCommand() {
     override val id = "editor.prettier"
 
     override fun getLabel() = "Format with Prettier"
 
-    override fun getIcon() = getPrettierIcon(context)
+    override fun getIcon() = getPrettierIcon(extensionContext)
 
-    override fun action(editorActionContext: EditorActionContext) {
+    override fun execute(context: EditorActionContext) {
         val range =
-            editorActionContext.editor.cursorRange.takeIf {
-                editorActionContext.editor.isTextSelected
+            context.editor.cursorRange.takeIf {
+                context.editor.isTextSelected
             }
-        onFormat(editorActionContext.editorTab, editorActionContext.editor, range)
+        onFormat(context.editorTab, context.editor, range)
     }
 }

@@ -20,8 +20,8 @@ class PrettierProvider(
     override val icon
         get() = getPrettierIcon(context)
 
-    override fun getFormatter(targetFile: FileObject): Formatter? {
-        if (targetFile == null) return null
-        return PrettierFormatter(context, settings, binary, targetFile)
+    override fun getFormatter(fileObject: FileObject?): Formatter? {
+        if (fileObject == null) return null
+        return PrettierFormatter(context, settings, binary, fileObject)
     }
 }

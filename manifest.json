@@ -3,7 +3,7 @@
   "id": "com.koner.prettier",
   "name": "Prettier",
   "mainClass": "com.koner.prettier.Main",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Xed-Editor extension adding automatic code formatting with Prettier.",
   "license": "MIT",
   "tags": [
@@ -15,7 +15,7 @@
     "displayName": "KonerDev",
     "github": "KonerDev"
   },
-  "minAppVersion": 104,
+  "minAppVersion": 106,
   "maxAppVersion": null,
   "repository": "https://github.com/KonerDev/xed-prettier",
   "hasSettings": true
